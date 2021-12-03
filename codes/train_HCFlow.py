@@ -23,7 +23,7 @@ import lpips
 def main():
     #### setup options
     parser = argparse.ArgumentParser() # train_SR_CelebA_8X_HCFlow train_SR_DF2K_4X_HCFlow train_Rescaling_DF2K_4X_HCFlow
-    parser.add_argument('--opt', type=str, default='options/train/train_SR_CelebA_8X_HCFlow.yml',
+    parser.add_argument('--opt', type=str, default='',
                         help='Path to option YMAL file of MANet.')
     parser.add_argument('--launcher', choices=['none', 'pytorch'], default='none',
                         help='job launcher')

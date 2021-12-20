@@ -117,7 +117,7 @@ train:
 
 #### validation settings
 val:
-  heats: [0.0, 1.0]
+  heats: [0.0]
   n_sample: 1
 
 

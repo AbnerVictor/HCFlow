@@ -20,12 +20,11 @@ class rgb_to_ycbcr_jpeg(nn.Module):
         matrix = np.array(
             [[0.299, 0.587, 0.114], [-0.168736, -0.331264, 0.5],
              [0.5, -0.418688, -0.081312]], dtype=np.float32).T
-        self.shift = nn.Parameter(torch.tensor([0., 128., 128.]))
-        #
-        self.matrix = nn.Parameter(torch.from_numpy(matrix))
+        self.shift = nn.Parameter(torch.tensor([0., 128., 128.]), requires_grad=False)
+        self.matrix = nn.Parameter(torch.from_numpy(matrix), requires_grad=False)
 
     def forward(self, image):
-        image = image.permute(0, 2, 3, 1)
+        image = image.permute(0, 2, 3, 1)  # B, H, W, C
         result = torch.tensordot(image, self.matrix, dims=1) + self.shift
     #    result = torch.from_numpy(result)
         result.view(image.shape)
@@ -89,8 +88,8 @@ class dct_8x8(nn.Module):
                 (2 * y + 1) * v * np.pi / 16)
         alpha = np.array([1. / np.sqrt(2)] + [1] * 7)
         #
-        self.tensor =  nn.Parameter(torch.from_numpy(tensor).float())
-        self.scale = nn.Parameter(torch.from_numpy(np.outer(alpha, alpha) * 0.25).float() )
+        self.tensor =  nn.Parameter(torch.from_numpy(tensor).float(), requires_grad=False)
+        self.scale = nn.Parameter(torch.from_numpy(np.outer(alpha, alpha) * 0.25).float(), requires_grad=False)
         
     def forward(self, image):
         image = image - 128
@@ -156,6 +155,9 @@ class compress_jpeg(nn.Module):
             rgb_to_ycbcr_jpeg(),
             chroma_subsampling()
         )
+        self.l1_yuv444 = nn.Sequential(
+            chroma_subsampling()
+        )
         self.l2 = nn.Sequential(
             block_splitting(),
             dct_8x8()
@@ -163,17 +165,24 @@ class compress_jpeg(nn.Module):
         self.c_quantize = c_quantize(rounding=rounding)
         self.y_quantize = y_quantize(rounding=rounding)
 
-    def forward(self, image, factor):
-        y, cb, cr = self.l1(image*255)
+    def forward(self, image, factor, input_format='rgb'):
+        if input_format == 'rgb':
+            y, cb, cr = self.l1(image*255)
+        if input_format == 'yuv444':
+            y, cb, cr = self.l1_yuv444(image.permute(0, 2, 3, 1) * 255.)
+        elif input_format == 'yuv422':
+            y, cb, cr = image[0] * 255., image[1] * 255., image[2] * 255.
         components = {'y': y, 'cb': cb, 'cr': cr}
         components_new = {}
         components_diff = {}
         for k in components.keys():
             comp = self.l2(components[k])
+            # [1, 112, 112] -> [1, 196, 8, 8]
+            # [1, 56, 56] -> [1, 49, 8, 8]
             if k in ('cb', 'cr'):
-                comp_new, comp_diff = self.c_quantize(comp,factor)
+                comp_new, comp_diff = self.c_quantize(comp, factor)
             else:
-                comp_new, comp_diff = self.y_quantize(comp,factor)
+                comp_new, comp_diff = self.y_quantize(comp, factor)
             
             components_new[k] = comp_new
             components_diff[k] = comp_diff

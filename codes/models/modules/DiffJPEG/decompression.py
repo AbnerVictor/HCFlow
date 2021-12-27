@@ -119,13 +119,13 @@ class ycbcr_to_rgb_jpeg(nn.Module):
     Outpput:
         result(tensor): batch x 3 x height x width
     """
-    def __init__(self):
+    def __init__(self, shift=128.):
         super(ycbcr_to_rgb_jpeg, self).__init__()
 
         matrix = np.array(
             [[1., 0., 1.402], [1, -0.344136, -0.714136], [1, 1.772, 0]],
             dtype=np.float32).T
-        self.shift = nn.Parameter(torch.tensor([0, -128., -128.]))
+        self.shift = nn.Parameter(torch.tensor([0., -128., -128.]))
         self.matrix = nn.Parameter(torch.from_numpy(matrix))
 
     def forward(self, image):
@@ -153,7 +153,7 @@ class decompress_jpeg(nn.Module):
         self.colors = ycbcr_to_rgb_jpeg()
 
 
-    def forward(self, y, cb, cr, factor, h, w):
+    def forward(self, y, cb, cr, factor, h, w, inter=False):
         components = {'y': y, 'cb': cb, 'cr': cr}
         for k in components.keys():
             if k in ('cb', 'cr'):
@@ -164,10 +164,17 @@ class decompress_jpeg(nn.Module):
                 height, width = h, w
             comp = self.idct(comp)
             components[k] = self.merging(comp, height, width)
-            #
+                            # 32, 32, 32 [26, 277] # cb 32,16,16 [100, 200], 32,16,16 [-4, 161],
         image = self.chroma(components['y'], components['cb'], components['cr'])
+        chroma_upsampling = image
         image = self.colors(image)
-
+        rgb = image
         image = torch.min(255*torch.ones_like(image),
                           torch.max(torch.zeros_like(image), image))
-        return image/255
+        if inter:
+            inter_result = {"merging":              components,
+                            "chroma_upsampling":    chroma_upsampling,
+                            "rgb":                  rgb}
+            return image/255, inter_result
+        else:
+            return image/255

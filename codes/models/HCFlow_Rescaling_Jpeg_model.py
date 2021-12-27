@@ -13,14 +13,17 @@ from .base_model import BaseModel
 import utils.util as util
 from models.modules.loss import ReconstructionLoss
 from models.modules.Basic import Quantization
+from models.modules.DiffJPEG.DiffJPEG import DiffJPEG
+import numpy as np
+
 # from torch.cuda.amp import autocast as autocast
 
 logger = logging.getLogger('base')
 
 
-class HCFLowRescalingModel(BaseModel):
+class HCFLowRescalingJpegModel(BaseModel):
     def __init__(self, opt, step):
-        super(HCFLowRescalingModel, self).__init__(opt)
+        super(HCFLowRescalingJpegModel, self).__init__(opt)
         self.opt = opt
 
         self.hr_size = util.opt_get(opt, ['datasets', 'train', 'GT_size'], 160)
@@ -38,8 +41,12 @@ class HCFLowRescalingModel(BaseModel):
         else:
             self.netG = DataParallel(self.netG)
 
-        self.Quantization = Quantization()
+        # self.Quantization = Quantization()
 
+        net_opt = opt['network_G']
+        self.DiffJPEG = DiffJPEG(differentiable=net_opt['differentiable'],
+                                 quality=net_opt['jpg_quality'], quality_range=net_opt['quality_range'])
+        self.DiffJPEG.to(self.device)
 
         if self.is_train:
             train_opt = opt['train']
@@ -197,6 +204,15 @@ class HCFLowRescalingModel(BaseModel):
                 init.constant_(layer.weight, 1)
                 init.constant_(layer.bias.data, 0.0)
 
+    def pad_JPEG(self, x):
+        _, _, h, w = x.shape
+        pad_h = int(np.ceil(h / 16) * 16) - h
+        pad_w = int(np.ceil(w / 16) * 16) - w
+        x = F.pad(x, (0, pad_w, 0, pad_h), mode='constant', value=0)
+        x_jpg = self.DiffJPEG(x)
+        x_jpg = x_jpg[:, :, :h, :w]
+        return x_jpg
+
     def feed_data(self, data, need_GT=True):
         self.var_L = data['LQ'].to(self.device)  # LQ
         if need_GT:
@@ -216,7 +232,8 @@ class HCFLowRescalingModel(BaseModel):
             l_g_lr = self.l_pix_w_lr * self.cri_pix_lr(fake_LR, self.var_L)
             l_g_z = self.l_w_z * (torch.cat([fake_z1.flatten(), fake_z2.flatten()],0)**2).mean()
 
-            fake_LR = self.Quantization(fake_LR)
+            # fake_LR = self.Quantization(fake_LR)
+            fake_LR = self.pad_JPEG(fake_LR)
             fake_H = self.netG(lr=fake_LR, z=None, u=None, eps_std=self.eps_std_reverse, reverse=True)
             l_g_hr = self.l_pix_w_hr * self.cri_pix_hr(fake_H, self.real_H)
 
@@ -311,7 +328,8 @@ class HCFLowRescalingModel(BaseModel):
         with torch.no_grad():
             # hr->lr+z, calculate nll
             self.fake_L_from_H, fake_z1, fake_z2 = self.netG(hr=self.real_H, lr=self.var_L, u=None, reverse=False, training=False)
-            self.fake_L_from_H = self.Quantization(self.fake_L_from_H)
+            # self.fake_L_from_H = self.Quantization(self.fake_L_from_H)
+            self.fake_L_from_H = self.pad_JPEG(self.fake_L_from_H)
 
             # lr+z->hr
             for heat in self.heats:

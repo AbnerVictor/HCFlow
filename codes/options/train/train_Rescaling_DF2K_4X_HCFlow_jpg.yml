@@ -12,8 +12,8 @@ datasets:
   train:
     name: DF2K_tr
     mode: GTLQ
-    dataroot_GT: /disk1/xin/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/DIV2K/HR/DIV2K_train_HR
-    dataroot_LQ: /disk1/xin/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/DIV2K/LR/DIV2K_train_LR_bicubic/X4
+    dataroot_GT: /workspace/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/DIV2K/HR/DIV2K_train_HR
+    dataroot_LQ: /workspace/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/DIV2K/LR/DIV2K_train_LR_bicubic/X4
 
     use_shuffle: true
     n_workers: 16
@@ -26,8 +26,8 @@ datasets:
   val:
     name: Set14
     mode: GTLQ
-    dataroot_GT: /disk1/xin/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/Set14/GTmod12
-    dataroot_LQ: /disk1/xin/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/Set14/LRbicx4
+    dataroot_GT: /workspace/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/Set14/GTmod12
+    dataroot_LQ: /workspace/Video-Enhancement-Playground/datasets/Image_Super_Resolution/Classic/Set14/LRbicx4
 
 
 # The optimization may not be stable for rescaling (+-0.1dB). A simple trick: for each stage of learning rate,

@@ -1,5 +1,5 @@
 #### general settings
-name: 003_DF2K_x4_rescaling_HCFlow_jpg_1228
+name: 003_DF2K_x4_rescaling_HCFlow_jpg_1228_loss_after_degrade
 use_tb_logger: true
 model: HCFlow_Rescaling_Jpeg
 distortion: sr
@@ -95,7 +95,7 @@ train:
 
   pixel_criterion_lr: l2
   pixel_weight_lr: !!float 5e-2
-  pixel_criterion_after_degrade: false
+  pixel_criterion_after_degrade: true
 
   eps_std_reverse: 1.0
   pixel_criterion_hr: l1

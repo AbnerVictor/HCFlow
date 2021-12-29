@@ -85,6 +85,7 @@ class HCFLowRescalingJpegModel(BaseModel):
 
             self.l_pix_w_hr = train_opt['pixel_weight_hr']
             self.l_pix_w_lr = train_opt['pixel_weight_lr']
+            self.pixel_criterion_after_degrade = train_opt.get('pixel_criterion_after_degrade', False)
             self.l_w_z = train_opt['weight_z']
 
             # HR feature loss
@@ -229,11 +230,18 @@ class HCFLowRescalingJpegModel(BaseModel):
             self.optimizer_G.zero_grad()
 
             fake_LR, fake_z1, fake_z2 = self.netG(hr=self.real_H, lr=self.var_L, u=None, reverse=False)
-            l_g_lr = self.l_pix_w_lr * self.cri_pix_lr(fake_LR, self.var_L)
+            # l_g_lr = self.l_pix_w_lr * self.cri_pix_lr(fake_LR, self.var_L)
             l_g_z = self.l_w_z * (torch.cat([fake_z1.flatten(), fake_z2.flatten()],0)**2).mean()
 
             # fake_LR = self.Quantization(fake_LR)
+            if not self.pixel_criterion_after_degrade:
+                l_g_lr = self.l_pix_w_lr * self.cri_pix_lr(fake_LR, self.var_L)
+
             fake_LR = self.pad_JPEG(fake_LR)
+
+            if self.pixel_criterion_after_degrade:
+                l_g_lr = self.l_pix_w_lr * self.cri_pix_lr(fake_LR, self.var_L)
+
             fake_H = self.netG(lr=fake_LR, z=None, u=None, eps_std=self.eps_std_reverse, reverse=True)
             l_g_hr = self.l_pix_w_hr * self.cri_pix_hr(fake_H, self.real_H)
 

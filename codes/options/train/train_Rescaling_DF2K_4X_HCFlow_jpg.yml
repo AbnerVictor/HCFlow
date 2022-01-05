@@ -1,5 +1,5 @@
 #### general settings
-name: 003_DF2K_x4_rescaling_HCFlow_jpg_1228
+name: 003_DF2K_x4_rescaling_HCFlow_jpg_90_0104_fix_JPEG
 use_tb_logger: true
 model: HCFlow_Rescaling_Jpeg
 distortion: sr
@@ -12,8 +12,8 @@ datasets:
   train:
     name: DF2K_tr
     mode: GTLQ
-    dataroot_GT: /mnt/yfs/xinyang/workspace/datasets/DIV2K/HR/DIV2K_train_HR
-    dataroot_LQ: /mnt/yfs/xinyang/workspace/datasets/DIV2K/LR/DIV2K_train_LR_bicubic/X4
+    dataroot_GT: /mnt/yfs/xinyang/workspace/datasets/DIV2K/HR/DIV2K_train_HR_sub
+    dataroot_LQ: /mnt/yfs/xinyang/workspace/datasets/DIV2K/LR/DIV2K_train_LR_bicubic/X4_sub
 
     use_shuffle: true
     n_workers: 16

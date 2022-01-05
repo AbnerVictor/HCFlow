@@ -2,10 +2,10 @@
 import torch
 import torch.nn as nn
 # Local
-from Experimental_root.ops.DiffJPEG.compression import compress_jpeg, block_splitting
-from Experimental_root.ops.DiffJPEG.decompression import decompress_jpeg, block_merging
-from Experimental_root.ops.DiffJPEG.utils import diff_round, quality_to_factor
-from Experimental_root.ops.DiffJPEG.differentiable_quantize import choose_rounding
+from models.modules.DiffJPEG.compression import compress_jpeg, block_splitting
+from models.modules.DiffJPEG.decompression import decompress_jpeg, block_merging
+from models.modules.DiffJPEG.utils import diff_round, quality_to_factor
+from models.modules.DiffJPEG.differentiable_quantize import choose_rounding
 # from .differentiable_quantize import no_quantize_function, fft_quantization
 import numpy as np
 

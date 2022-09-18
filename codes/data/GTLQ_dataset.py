@@ -118,7 +118,7 @@ class GTLQDataset(data.Dataset):
         # modcrop
         _, H, W = img_LR.size()
         img_GT = img_GT[:, :H*self.scale, :W*self.scale]
-
+        print(f"img_GT.shape {img_GT.shape}")
         return {'LQ': img_LR, 'GT': img_GT, 'LQ_path': LR_path, 'GT_path': GT_path}
 
     def __len__(self):

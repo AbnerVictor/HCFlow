@@ -1,0 +1,37 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "test_HCFlow.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES":"1",
+                "PYTHONPATH": "${workspaceRoot}"
+            },
+            "args": [
+                "--opt", "./options/test/0222_test_Rescaling_DF2K_4X_HCFlow_jpeg.yml"
+            ]
+        },
+        {
+            "name": "Python: train HCFlow JPEG",
+            "type": "python",
+            "request": "launch",
+            "program": "train_HCFlow.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES":"1",
+                "PYTHONPATH": "${workspaceRoot}"
+            },
+            "args": [
+                "--opt", "./options/train/0918_train_Rescaling_DF2K_8X_HCFlow.yml"
+            ]
+        },
+    
+    ]
+}

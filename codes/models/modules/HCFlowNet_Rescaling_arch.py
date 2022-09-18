@@ -23,8 +23,10 @@ class HCFlowNet_Rescaling(nn.Module):
         self.flow = FlowNet((hr_size, hr_size, hr_channel), opt=opt)
 
     # hr: HR image, lr: LR image, z: latent variable, u: conditional variable
-    def forward(self, hr=None, lr=None, z=None, u=None, eps_std=None,
-                add_gt_noise=False, step=None, reverse=False, training=True):
+    # def forward(self, hr=None, lr=None, z=None, u=None, eps_std=None,
+    #             add_gt_noise=False, step=None, reverse=False, training=True):
+    def forward(self, lr=None,  hr=None, z=None, u=None, eps_std=1.0,
+                add_gt_noise=False, step=None, reverse=True, training=False):
 
         # hr->z
         if not reverse:

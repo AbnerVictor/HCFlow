@@ -897,6 +897,13 @@ def calculate_kernel_psnr(img1, img2, border=0):
 
 def calculate_psnr(img1, img2):
     # img1 and img2 have range [0, 255]
+    shape = img2.shape
+    if len(shape) == 3:
+        h, w, c = img2.shape
+        img1 = img1[0:h, 0:w, 0:c]
+    elif len(shape) == 2:
+        h, w = img2.shape
+        img1 = img1[0:h, 0:w,]
     img1 = img1.astype(np.float64)
     img2 = img2.astype(np.float64)
     mse = np.mean((img1 - img2)**2)
@@ -939,6 +946,13 @@ def calculate_ssim(img1, img2):
     the same outputs as MATLAB's
     img1, img2: [0, 255]
     '''
+    shape = img2.shape
+    if len(shape) == 3:
+        h, w, c = img2.shape
+        img1 = img1[0:h, 0:w, 0:c]
+    elif len(shape) == 2:
+        h, w = img2.shape
+        img1 = img1[0:h, 0:w,]
     if not img1.shape == img2.shape:
         raise ValueError('Input images must have the same dimensions.')
     if img1.ndim == 2:

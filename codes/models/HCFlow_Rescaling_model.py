@@ -40,6 +40,7 @@ class HCFLowRescalingModel(BaseModel):
 
         self.Quantization = Quantization()
 
+
         if self.is_train:
             train_opt = opt['train']
             self.netG.train()

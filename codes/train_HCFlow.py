@@ -230,11 +230,17 @@ def main():
                     # calculate LR psnr
                     gt_img_lr = util.tensor2img(visuals['LQ'])
                     sr_img_lr = util.tensor2img(visuals['LQ_fromH'])
+
+                    # save LR
+                    save_img_path = os.path.join(img_dir, 'LR_{:s}_{:d}.png'.format(img_name, current_step))
+                    util.save_img(sr_img_lr, save_img_path)
+
                     gt_img_lr = gt_img_lr / 255.
                     sr_img_lr = sr_img_lr / 255.
 
                     _, _, lr_psnr_y, _ = util.calculate_psnr_ssim(gt_img_lr, sr_img_lr, 0)
                     avg_lr_psnr_y += lr_psnr_y
+
 
                     # deal with sr images
                     for heat in opt['val']['heats']:

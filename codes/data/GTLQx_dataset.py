@@ -81,7 +81,13 @@ class GTLQxDataset(data.Dataset):
         # get GT and LR image
         GT_path = self.GT_paths[index]
         # LR_path = self.LR_paths[index]
-        LR_path = GT_path.replace('HR', 'LR_bicubic/X4').replace('.png','x{}.png'.format(self.scale))
+        # LR_path = GT_path.replace('HR', 'LR_bicubic/X4').replace('.png','x{}.png'.format(self.scale))
+        # LR_path = GT_path.replace('HR/DIV2K_valid_HR', 'LR/DIV2K_valid_LR_bicubic/X{}'.format(self.scale)).replace('.png','x{}.png'.format(self.scale))
+        # LR_path = GT_path.replace('HR/DIV2K_valid_HR', 'LR/DIV2K_valid_LR_bicubic/X{}'.format(self.scale)).replace('.png','x{}.png'.format(self.scale))
+        LR_path = GT_path.replace(self.opt['dataroot_GT'], self.opt['dataroot_LQ']).replace('.png','{}.png'.format(self.opt['filename_tmpl']))
+        
+        # LR_path = self.LR_paths[index].replace('.png','x{}.png'.format(self.scale))
+        # print(GT_path, LR_path)
         img_GT = util.read_img(self.GT_env, GT_path, resolution)  # return: Numpy float32, HWC, BGR, [0,1]
         img_LR = util.read_img(self.LR_env, LR_path, resolution)
 

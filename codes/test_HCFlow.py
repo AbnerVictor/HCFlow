@@ -78,7 +78,8 @@ for test_loader in test_loaders:
         real_image = True if test_loader.dataset.opt['mode'] == 'LQ' else False
         img_path = test_data['LQ_path'][0] if real_image else test_data['GT_path'][0]
         img_name = os.path.splitext(os.path.basename(img_path))[0]
-
+        test_data['dataset_dir'] = dataset_dir
+        test_data['img_name'] = img_name
         model.feed_data(test_data, need_GT=not real_image)
         nll = model.test()
         avg_nll += nll
@@ -102,8 +103,8 @@ for test_loader in test_loaders:
             # calculate PSNR for LR
             gt_img_lr = util.tensor2img(visuals['LQ'])
             sr_img_lr = util.tensor2img(visuals['LQ_fromH'])
-            # save_img_path = os.path.join(dataset_dir, 'LR_{:s}_{:.1f}_{:d}.png'.format(img_name, 1.0, 0))
-            # util.save_img(sr_img_lr, save_img_path)
+            save_img_path = os.path.join(dataset_dir, 'LR_{:s}_{:.1f}_{:d}.png'.format(img_name, 1.0, 0))
+            util.save_img(sr_img_lr, save_img_path)
             gt_img_lr = gt_img_lr / 255.
             sr_img_lr = sr_img_lr / 255.
 

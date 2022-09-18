@@ -9,11 +9,11 @@ gpu_ids: [0]
 
 
 datasets:
-  test0:
-    name: example
-    mode: GTLQ
-    dataroot_GT: ../datasets/example_general_4X/HR
-    dataroot_LQ: ../datasets/example_general_4X/LR
+  # test0:
+  #   name: example
+  #   mode: GTLQ
+  #   dataroot_GT: ../datasets/example_general_4X/HR
+  #   dataroot_LQ: ../datasets/example_general_4X/LR
 
 #  test_1:
 #    name: Set5
@@ -44,6 +44,12 @@ datasets:
 #    mode: GTLQx
 #    dataroot_GT: ../datasets/DIV2K/HR
 #    dataroot_LQ: ../datasets/DIV2K/LR_bicubic/X4
+
+  test_5:
+   name: DIV2K-validation
+   mode: GTLQx
+   dataroot_GT: /mnt/yfs/xinyang/workspace/datasets/DIV2K/HR/DIV2K_valid_HR
+   dataroot_LQ: /mnt/yfs/xinyang/workspace/datasets/DIV2K/LR/DIV2K_valid_LR_bicubic/X4
 
 
 #### network structures
@@ -87,7 +93,6 @@ val:
 path:
   strict_load: true
   load_submodule: ~
-  pretrain_model_G: ../experiments/pretrained_models/Rescaling_DF2K_X4_HCFlow.pth
-
+  pretrain_model_G: /mnt/yfs/xinyang/workspace/HCFlow/experiments/pretrained_models/Rescaling_DF2K_X4_HCFlow.pth
 
 

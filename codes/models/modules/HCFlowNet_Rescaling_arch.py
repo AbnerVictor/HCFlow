@@ -18,7 +18,14 @@ class HCFlowNet_Rescaling(nn.Module):
 
         hr_size = opt_get(opt, ['datasets', 'train', 'GT_size'], 160)
         hr_channel = opt_get(opt, ['network_G', 'in_nc'], 3)
+        scale = opt_get(opt, ['scale'])
+        if scale == 4:
+            from models.modules.FlowNet_Rescaling_x4 import FlowNet
+        elif scale == 8:
+            from models.modules.FlowNet_Rescaling_x8 import FlowNet
 
+        else:
+            raise NotImplementedError('Scale {} is not implemented'.format(scale))
         # hr->lr+z
         self.flow = FlowNet((hr_size, hr_size, hr_channel), opt=opt)
 

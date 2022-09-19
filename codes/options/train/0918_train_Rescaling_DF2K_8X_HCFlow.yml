@@ -1,4 +1,5 @@
 #### general settings
+# python train_HCFlow.py --opt options/train/0918_train_Rescaling_DF2K_8X_HCFlow.yml
 name: 0918_train_Rescaling_DF2K_8X_HCFlow
 use_tb_logger: true
 model: HCFlow_Rescaling
@@ -12,8 +13,8 @@ datasets:
   train:
     name: DF2K_tr
     mode: GTLQ
-    dataroot_GT: ../datasets/DIV2K/HR/DIV2K_train_HR_sub
-    dataroot_LQ: ../datasets/DIV2K/LR/DIV2K_train_LR_bicubic/X4_sub
+    dataroot_GT: /home/cqiaa/fast_rescaling/HCFlow/datasets/Image_Super_Resolution/Classic/DIV2K/HR/DIV2K_train_HR_sub
+    dataroot_LQ: /home/cqiaa/fast_rescaling/HCFlow/datasets/Image_Super_Resolution/Classic/DIV2K/LR/DIV2K_train_LR_bicubic/X8_sub
 
     use_shuffle: true
     n_workers: 16
@@ -24,10 +25,10 @@ datasets:
     color: RGB
 
   val:
-    name: Set5
-    mode: GTLQx
-    dataroot_GT: ../datasets/Set5/GTmod12
-    dataroot_LQ: ../datasets/Set5/LRbicx4
+    name: Set14
+    mode: GTLQ
+    dataroot_GT: /home/cqiaa/fast_rescaling/HCFlow/datasets/Image_Super_Resolution/Classic/Set14/GTmod24
+    dataroot_LQ: /home/cqiaa/fast_rescaling/HCFlow/datasets/Image_Super_Resolution/Classic/Set14/LRbicx8
 
 
 # The optimization may not be stable for rescaling (+-0.1dB). A simple trick: for each stage of learning rate,
@@ -41,7 +42,7 @@ network_G:
 
   flowDownsampler:
     K: 14
-    L: 2
+    L: 3
     squeeze: haar # better than squeeze2d
     flow_permutation: none # bettter than invconv
     flow_coupling: Affine3shift # better than affine
@@ -50,7 +51,7 @@ network_G:
     cond_channels: ~
     splitOff:
       enable: true
-      after_flowstep: [6, 6]
+      after_flowstep: [6, 6, 6]
       flow_permutation: invconv
       flow_coupling: Affine
       stage1: True
